@@ -9,6 +9,7 @@ please see basic usage here [appetize-docs](https://appetize.io/docs)
 ### Argument Reference
 ```
 api_token   - (Required) The api token for appetize api
+              or set "APPETIZE_API_TOKEN" as environment variable 
 url         - (Required) A publicly accessible link to your .zip, .tar.gz, or .apk file
               Only for appetize_app resource
 file_path   - (Required) Specify a file location on the local filesystem
