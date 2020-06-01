@@ -1,7 +1,6 @@
 package main
 
 import (
-	"appetize-provider/appetize"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
@@ -15,11 +14,11 @@ func resourceAppetizeApp() *schema.Resource {
 		Delete: resourceAppetizeAppDelete,
 
 		Schema: map[string]*schema.Schema{
-			"url": &schema.Schema{
+			"api_token": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"api_token": &schema.Schema{
+			"url": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
 			},
@@ -133,23 +132,4 @@ func resourceAppetizeAppDelete(d *schema.ResourceData, m interface{}) error {
 	}
 
 	return nil
-}
-
-func NewAppetizer(d *schema.ResourceData) *appetize.Appetize {
-	apiToken := d.Get("api_token").(string)
-	return appetize.NewAppetize(apiToken)
-}
-
-func NewAppOptions(d *schema.ResourceData) *appetize.AppOptions {
-	appOptions := &appetize.AppOptions{
-		FilePath: d.Get("file_path").(string),
-		Platform: d.Get("platform").(string),
-		Disabled: d.Get("disabled").(bool),
-	}
-
-	appOptions.ButtonText = d.Get("button_text").(string)
-	appOptions.PostSessionButtonText = d.Get("post_session_button_text").(string)
-	appOptions.Note = d.Get("note").(string)
-
-	return appOptions
 }

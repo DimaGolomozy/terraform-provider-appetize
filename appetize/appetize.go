@@ -19,6 +19,7 @@ func appetizeUrlWithPublicKey(apiToken string, publicKey string) string {
 }
 
 type AppOptions struct {
+	Url                   string
 	FilePath              string
 	Platform              string
 	ButtonText            string
@@ -54,71 +55,38 @@ func NewAppetize(apiToken string) *Appetize {
 }
 
 func (appetize *Appetize) CreateApp(appOptions *AppOptions) (*App, error) {
-	params := createParams(appOptions)
-	resp, err := uploadFile(appetizeUrl(appetize.apiToken), appOptions.FilePath, params)
+	resp, err := appetize.create(appetizeUrl(appetize.apiToken), appOptions)
 	if err != nil {
 		return nil, err
 	}
-
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
-
-		var app App
-		_ = json.Unmarshal(bodyBytes, &app)
-		return &app, nil
-	}
-
-	return nil, nil
+	return appetize.read(resp)
 }
 
 func (appetize *Appetize) UpdateApp(publicKey string, appOptions *AppOptions) (*App, error) {
-	params := createParams(appOptions)
-	jsonValue, _ := json.Marshal(params)
-
-	resp, err := http.Post(appetizeUrlWithPublicKey(appetize.apiToken, publicKey), "application/json", bytes.NewBuffer(jsonValue))
+	resp, err := appetize.create(appetizeUrlWithPublicKey(appetize.apiToken, publicKey), appOptions)
 	if err != nil {
 		return nil, err
 	}
-
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
-
-		var app App
-		_ = json.Unmarshal(bodyBytes, &app)
-		return &app, nil
-	}
-
-	return nil, nil
+	return appetize.read(resp)
 }
 
 func (appetize *Appetize) DeleteApp(publicKey string) error {
 	req, _ := http.NewRequest("DELETE", appetizeUrlWithPublicKey(appetize.apiToken, publicKey), nil)
 	client := &http.Client{}
 	resp, err := client.Do(req)
+
 	if err != nil {
 		return err
-	}
-
-	if resp.StatusCode != http.StatusOK {
+	} else if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("bad status code from appetize (%d)", resp.StatusCode)
 	}
+
 	return nil
 }
 
 func (appetize *Appetize) GetApp(publicKey string) (*App, error) {
 	apps, err := appetize.listApps()
 	if err != nil {
-		log.Fatal(err)
 		return nil, err
 	}
 
@@ -134,24 +102,21 @@ func (appetize *Appetize) GetApp(publicKey string) (*App, error) {
 func (appetize *Appetize) listApps() ([]App, error) {
 	resp, err := http.Get(appetizeUrl(appetize.apiToken))
 	if err != nil {
+		return nil, err
+	} else if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad status code from appetize (%d)", resp.StatusCode)
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
 		log.Fatal(err)
 		return nil, err
 	}
 
-	defer resp.Body.Close()
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
-		}
-
-		var listResult ListResult
-		_ = json.Unmarshal(bodyBytes, &listResult)
-		return listResult.Data, nil
-	}
-
-	return nil, nil
+	var listResult ListResult
+	_ = json.Unmarshal(bodyBytes, &listResult)
+	return listResult.Data, nil
 }
 
 func createParams(appOptions *AppOptions) map[string]*string {
@@ -171,4 +136,33 @@ func createParams(appOptions *AppOptions) map[string]*string {
 	}
 
 	return params
+}
+
+func (appetize *Appetize) create(url string, appOptions *AppOptions) (*http.Response, error) {
+	params := createParams(appOptions)
+
+	if appOptions.Url != "" {
+		params["url"] = &appOptions.Url
+		jsonValue, _ := json.Marshal(params)
+
+		return http.Post(url, "application/json", bytes.NewBuffer(jsonValue))
+	} else {
+		return uploadFile(url, appOptions.FilePath, params)
+	}
+}
+
+func (appetize *Appetize) read(resp *http.Response) (*App, error) {
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("bad status code from appetize (%d)", resp.StatusCode)
+	}
+
+	defer resp.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var app App
+	_ = json.Unmarshal(bodyBytes, &app)
+	return &app, nil
 }
