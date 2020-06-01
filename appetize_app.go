@@ -15,12 +15,14 @@ func resourceAppetizeApp() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"api_token": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:        schema.TypeString,
+				Required:    true,
+				DefaultFunc: schema.EnvDefaultFunc("APPETIZE_API_TOKEN", nil),
 			},
 			"url": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.IsURLWithHTTPorHTTPS,
 			},
 			"platform": &schema.Schema{
 				Type:         schema.TypeString,
