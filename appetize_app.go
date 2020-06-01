@@ -111,18 +111,14 @@ func resourceAppetizeAppRead(d *schema.ResourceData, m interface{}) error {
 }
 
 func resourceAppetizeAppUpdate(d *schema.ResourceData, m interface{}) error {
-	//appetizer := NewAppetizer(d)
-	//app, err := appetizer.CreateApp(NewAppOptions(d))
-	//if err != nil {
-	//	//return fmt.Errorf("Error launching source instance: %s", err)
-	//	return err
-	//}
-	//
-	//if app == nil {
-	//	return fmt.Errorf("Error launching source instance: %s", err)
-	//}
-	//
-	//d.SetId(app.PublicKey)
+	isChanged := d.HasChanges("url", "platform", "disabled", "note", "button_text", "post_session_button_text")
+	if isChanged {
+		appetizer := NewAppetizer(d)
+		_, err := appetizer.UpdateApp(d.Id(), NewAppOptions(d))
+		if err != nil {
+			return err
+		}
+	}
 	return resourceAppetizeAppRead(d, m)
 }
 
