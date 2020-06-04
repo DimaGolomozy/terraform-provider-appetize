@@ -13,10 +13,15 @@ func NewAppetizer(d *schema.ResourceData) *appetize.Appetize {
 func NewAppOptions(d *schema.ResourceData) *appetize.AppOptions {
 	appOptions := &appetize.AppOptions{
 		Platform:              d.Get("platform").(string),
-		Disabled:              d.Get("disabled").(bool),
 		ButtonText:            d.Get("button_text").(string),
 		PostSessionButtonText: d.Get("post_session_button_text").(string),
 		Note:                  d.Get("note").(string),
+		FileType:              d.Get("file_type").(string),
+		LaunchUrl:             d.Get("launch_url").(string),
+		Timeout:               d.Get("timeout").(int),
+		Disabled:              d.Get("disabled").(bool),
+		DisabledHome:          d.Get("disable_home").(bool),
+		UseLastFrame:          d.Get("use_last_frame").(bool),
 	}
 
 	if v, ok := d.GetOk("file_path"); ok {

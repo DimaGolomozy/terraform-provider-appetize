@@ -24,13 +24,33 @@ func resourceAppetizeApp() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.IsURLWithHTTPorHTTPS,
 			},
+			"file_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: false,
+			},
 			"platform": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"ios", "android"}, false),
 			},
+			"timeout": &schema.Schema{
+				Type:     schema.TypeString,
+				Required: false,
+			},
+			"disable_home": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"disabled": &schema.Schema{
 				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"use_last_frame": &schema.Schema{
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"launch_url": &schema.Schema{
+				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"note": &schema.Schema{
@@ -100,6 +120,21 @@ func resourceAppetizeAppRead(d *schema.ResourceData, m interface{}) error {
 		}
 		if app.Note != nil {
 			d.Set("note", app.Note)
+		}
+		if app.FileType != nil {
+			d.Set("file_type", app.FileType)
+		}
+		if app.UseLastFrame != nil {
+			d.Set("use_last_frame", app.UseLastFrame)
+		}
+		if app.DisabledHome != nil {
+			d.Set("disabled_home", app.DisabledHome)
+		}
+		if app.LaunchUrl != nil {
+			d.Set("launch_url", app.LaunchUrl)
+		}
+		if app.Timeout != nil {
+			d.Set("timeout", app.Timeout)
 		}
 	}
 
