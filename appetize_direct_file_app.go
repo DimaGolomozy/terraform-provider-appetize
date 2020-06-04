@@ -34,12 +34,7 @@ func resourceAppetizeDirectFileAppCreate(d *schema.ResourceData, m interface{}) 
 	appetizer := NewAppetizer(d)
 	app, err := appetizer.CreateApp(NewAppOptions(d))
 	if err != nil {
-		//return fmt.Errorf("Error launching source instance: %s", err)
 		return err
-	}
-
-	if app == nil {
-		return fmt.Errorf("[ERROR] launching source instance: %s", err)
 	}
 
 	d.SetId(app.PublicKey)

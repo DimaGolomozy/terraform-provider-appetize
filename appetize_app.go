@@ -65,12 +65,7 @@ func resourceAppetizeAppCreate(d *schema.ResourceData, m interface{}) error {
 	appetizer := NewAppetizer(d)
 	app, err := appetizer.CreateApp(NewAppOptions(d))
 	if err != nil {
-		//return fmt.Errorf("Error launching source instance: %s", err)
 		return err
-	}
-
-	if app == nil {
-		return fmt.Errorf("Error launching source instance: %s", err)
 	}
 
 	d.SetId(app.PublicKey)
@@ -86,6 +81,7 @@ func resourceAppetizeAppRead(d *schema.ResourceData, m interface{}) error {
 	}
 
 	if app == nil {
+		fmt.Printf("cant find app with id (%s)", d.Id())
 		d.SetId("")
 	} else {
 		d.Set("public_key", app.PublicKey)
@@ -126,7 +122,7 @@ func resourceAppetizeAppDelete(d *schema.ResourceData, m interface{}) error {
 	appetizer := NewAppetizer(d)
 	err := appetizer.DeleteApp(d.Id())
 	if err != nil {
-		return fmt.Errorf("error deleting app (%s): %s", d.Id(), err)
+		return err
 	}
 
 	return nil
