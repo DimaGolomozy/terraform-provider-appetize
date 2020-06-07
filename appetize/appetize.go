@@ -26,10 +26,10 @@ type AppOptions struct {
 	PostSessionButtonText string
 	FileType              string
 	LaunchUrl             string
-	Timeout               int
-	UseLastFrame          bool
-	DisabledHome          bool
-	Disabled              bool
+	//Timeout               int
+	UseLastFrame bool
+	DisabledHome bool
+	Disabled     bool
 }
 
 type ListResult struct {
@@ -50,7 +50,7 @@ type App struct {
 	UseLastFrame          *string `json:"useLastFrame"`
 	DisabledHome          *string `json:"disableHome"`
 	LaunchUrl             *string `json:"launchUrl"`
-	Timeout               *string `json:"timeout"`
+	//Timeout               *string `json:"timeout"`
 }
 
 type Appetize struct {
@@ -131,7 +131,7 @@ func createParams(appOptions *AppOptions) map[string]*string {
 	disabled := strconv.FormatBool(appOptions.Disabled)
 	disabledHome := strconv.FormatBool(appOptions.DisabledHome)
 	useLastFrame := strconv.FormatBool(appOptions.UseLastFrame)
-	timeout := strconv.Itoa(appOptions.Timeout)
+	//timeout := strconv.Itoa(appOptions.Timeout)
 	params := map[string]*string{
 		"platform":              &appOptions.Platform,
 		"disabled":              &disabled,
@@ -139,10 +139,10 @@ func createParams(appOptions *AppOptions) map[string]*string {
 		"postSessionButtonText": &appOptions.PostSessionButtonText,
 		"note":                  &appOptions.Note,
 		"fileType":              &appOptions.FileType,
-		"timeout":               &timeout,
-		"disableHome":           &disabledHome,
-		"useLastFrame":          &useLastFrame,
-		"launchUrl":             &appOptions.LaunchUrl,
+		//"timeout":               &timeout,
+		"disableHome":  &disabledHome,
+		"useLastFrame": &useLastFrame,
+		"launchUrl":    &appOptions.LaunchUrl,
 	}
 
 	for key, val := range params {

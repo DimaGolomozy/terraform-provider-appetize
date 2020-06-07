@@ -33,10 +33,10 @@ func resourceAppetizeApp() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"timeout": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
+			//"timeout": &schema.Schema{
+			//	Type:     schema.TypeInt,
+			//	Optional: true,
+			//},
 			"disable_home": &schema.Schema{
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -133,9 +133,9 @@ func resourceAppetizeAppRead(d *schema.ResourceData, m interface{}) error {
 		if app.LaunchUrl != nil {
 			d.Set("launch_url", app.LaunchUrl)
 		}
-		if app.Timeout != nil {
-			d.Set("timeout", app.Timeout)
-		}
+		//if app.Timeout != nil {
+		//	d.Set("timeout", app.Timeout)
+		//}
 	}
 
 	return nil
