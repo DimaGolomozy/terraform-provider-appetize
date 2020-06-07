@@ -24,18 +24,18 @@ func resourceAppetizeApp() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.IsURLWithHTTPorHTTPS,
 			},
-			"file_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: false,
-			},
 			"platform": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
 				ValidateFunc: validation.StringInSlice([]string{"ios", "android"}, false),
 			},
+			"file_type": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"timeout": &schema.Schema{
 				Type:     schema.TypeString,
-				Required: false,
+				Optional: true,
 			},
 			"disable_home": &schema.Schema{
 				Type:     schema.TypeBool,
