@@ -24,6 +24,11 @@ type AppOptions struct {
 	ButtonText            string
 	Note                  string
 	PostSessionButtonText string
+	FileType              string
+	LaunchUrl             string
+	Timeout               int
+	UseLastFrame          bool
+	DisabledHome          bool
 	Disabled              bool
 }
 
@@ -41,6 +46,11 @@ type App struct {
 	ButtonText            *string `json:"buttonText"`
 	Note                  *string `json:"note"`
 	PostSessionButtonText *string `json:"postSessionButtonText"`
+	FileType              *string `json:"fileType"`
+	UseLastFrame          *string `json:"useLastFrame"`
+	DisabledHome          *string `json:"disableHome"`
+	LaunchUrl             *string `json:"launchUrl"`
+	Timeout               *string `json:"timeout"`
 }
 
 type Appetize struct {
@@ -119,12 +129,20 @@ func (appetize *Appetize) listApps() ([]App, error) {
 
 func createParams(appOptions *AppOptions) map[string]*string {
 	disabled := strconv.FormatBool(appOptions.Disabled)
+	disabledHome := strconv.FormatBool(appOptions.DisabledHome)
+	useLastFrame := strconv.FormatBool(appOptions.UseLastFrame)
+	timeout := strconv.Itoa(appOptions.Timeout)
 	params := map[string]*string{
 		"platform":              &appOptions.Platform,
 		"disabled":              &disabled,
 		"buttonText":            &appOptions.ButtonText,
 		"postSessionButtonText": &appOptions.PostSessionButtonText,
 		"note":                  &appOptions.Note,
+		"fileType":              &appOptions.FileType,
+		"timeout":               &timeout,
+		"disableHome":           &disabledHome,
+		"useLastFrame":          &useLastFrame,
+		"launchUrl":             &appOptions.LaunchUrl,
 	}
 
 	for key, val := range params {

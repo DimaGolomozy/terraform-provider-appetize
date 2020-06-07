@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
