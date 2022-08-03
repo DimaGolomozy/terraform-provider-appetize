@@ -58,7 +58,7 @@ type Appetize struct {
 	apiToken string
 }
 
-func NewAppetize(apiToken string) *Appetize {
+func NewAppetizer(apiToken string) *Appetize {
 	appetize := new(Appetize)
 	appetize.apiToken = apiToken
 	return appetize
@@ -182,11 +182,6 @@ func (appetize *Appetize) read(resp *http.Response) (*App, error) {
 	var app App
 	_ = json.Unmarshal(bodyBytes, &app)
 	return &app, nil
-}
-
-func NewAppetizer(d *schema.ResourceData) *Appetize {
-	apiToken := d.Get("api_token").(string)
-	return NewAppetize(apiToken)
 }
 
 func NewAppOptions(d *schema.ResourceData) *AppOptions {

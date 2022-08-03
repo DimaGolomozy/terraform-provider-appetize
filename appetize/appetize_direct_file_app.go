@@ -1,14 +1,17 @@
 package appetize
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceAppetizeDirectFileApp() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAppetizeDirectFileAppCreate,
-		Read:   resourceAppetizeAppRead,
-		Delete: resourceAppetizeAppDelete,
+		CreateContext: resourceAppetizeDirectFileAppCreate,
+		ReadContext:   resourceAppetizeAppRead,
+		DeleteContext: resourceAppetizeAppDelete,
 
 		Schema: func() map[string]*schema.Schema {
 			s := resourceAppetizeApp().Schema
@@ -29,13 +32,15 @@ func resourceAppetizeDirectFileApp() *schema.Resource {
 	}
 }
 
-func resourceAppetizeDirectFileAppCreate(d *schema.ResourceData, m interface{}) error {
-	appetizer := NewAppetizer(d)
-	app, err := appetizer.CreateApp(NewAppOptions(d))
+func resourceAppetizeDirectFileAppCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	appetizer := m.(*Appetize)
+	err := appetizer.DeleteApp(d.Id())
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	d.SetId(app.PublicKey)
-	return resourceAppetizeAppRead(d, m)
+	return diags
 }

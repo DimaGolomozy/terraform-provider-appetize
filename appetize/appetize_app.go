@@ -1,24 +1,22 @@
 package appetize
 
 import (
+	"context"
+
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 func resourceAppetizeApp() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceAppetizeAppCreate,
-		Read:   resourceAppetizeAppRead,
-		Update: resourceAppetizeAppUpdate,
-		Delete: resourceAppetizeAppDelete,
+		CreateContext: resourceAppetizeAppCreate,
+		ReadContext:   resourceAppetizeAppRead,
+		UpdateContext: resourceAppetizeAppUpdate,
+		DeleteContext: resourceAppetizeAppDelete,
 
 		Schema: map[string]*schema.Schema{
-			"api_token": &schema.Schema{
-				Type:        schema.TypeString,
-				Required:    true,
-				DefaultFunc: schema.EnvDefaultFunc("APPETIZE_API_TOKEN", nil),
-			},
 			"url": &schema.Schema{
 				Type:         schema.TypeString,
 				Required:     true,
@@ -81,84 +79,91 @@ func resourceAppetizeApp() *schema.Resource {
 	}
 }
 
-func resourceAppetizeAppCreate(d *schema.ResourceData, m interface{}) error {
-	appetizer := NewAppetizer(d)
+func resourceAppetizeAppCreate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	appetizer := m.(*Appetize)
 	app, err := appetizer.CreateApp(NewAppOptions(d))
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	d.SetId(app.PublicKey)
-	return resourceAppetizeAppRead(d, m)
+	return diags
 }
 
-func resourceAppetizeAppRead(d *schema.ResourceData, m interface{}) error {
-	appetizer := NewAppetizer(d)
+func resourceAppetizeAppRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	appetizer := m.(*Appetize)
 	app, err := appetizer.GetApp(d.Id())
 	if err != nil {
-		d.SetId("")
-		return err
+		return diag.FromErr(err)
 	}
-
 	if app == nil {
-		fmt.Printf("cant find app with id (%s)", d.Id())
-		d.SetId("")
-	} else {
-		d.Set("public_key", app.PublicKey)
-		d.Set("private_key", app.PrivateKey)
-		d.Set("platform", app.Platform)
-		d.Set("disabled", app.Disabled)
-
-		if app.Name != nil {
-			d.Set("name", app.Name)
-		}
-		if app.ButtonText != nil {
-			d.Set("button_text", app.ButtonText)
-		}
-		if app.PostSessionButtonText != nil {
-			d.Set("post_session_button_text", app.PostSessionButtonText)
-		}
-		if app.Note != nil {
-			d.Set("note", app.Note)
-		}
-		if app.FileType != nil {
-			d.Set("file_type", app.FileType)
-		}
-		if app.UseLastFrame != nil {
-			d.Set("use_last_frame", app.UseLastFrame)
-		}
-		if app.DisabledHome != nil {
-			d.Set("disabled_home", app.DisabledHome)
-		}
-		if app.LaunchUrl != nil {
-			d.Set("launch_url", app.LaunchUrl)
-		}
-		//if app.Timeout != nil {
-		//	d.Set("timeout", app.Timeout)
-		//}
+		return diag.FromErr(fmt.Errorf("failed getting app"))
 	}
 
-	return nil
+	d.Set("public_key", app.PublicKey)
+	d.Set("private_key", app.PrivateKey)
+	d.Set("platform", app.Platform)
+	d.Set("disabled", app.Disabled)
+
+	if app.Name != nil {
+		d.Set("name", app.Name)
+	}
+	if app.ButtonText != nil {
+		d.Set("button_text", app.ButtonText)
+	}
+	if app.PostSessionButtonText != nil {
+		d.Set("post_session_button_text", app.PostSessionButtonText)
+	}
+	if app.Note != nil {
+		d.Set("note", app.Note)
+	}
+	if app.FileType != nil {
+		d.Set("file_type", app.FileType)
+	}
+	if app.UseLastFrame != nil {
+		d.Set("use_last_frame", app.UseLastFrame)
+	}
+	if app.DisabledHome != nil {
+		d.Set("disabled_home", app.DisabledHome)
+	}
+	if app.LaunchUrl != nil {
+		d.Set("launch_url", app.LaunchUrl)
+	}
+	//if app.Timeout != nil {
+	//	d.Set("timeout", app.Timeout)
+	//}
+
+	return diags
 }
 
-func resourceAppetizeAppUpdate(d *schema.ResourceData, m interface{}) error {
+func resourceAppetizeAppUpdate(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	isChanged := d.HasChanges("url", "platform", "disabled", "note", "button_text", "post_session_button_text")
 	if isChanged {
-		appetizer := NewAppetizer(d)
+		appetizer := m.(*Appetize)
 		_, err := appetizer.UpdateApp(d.Id(), NewAppOptions(d))
 		if err != nil {
-			return err
+			return diag.FromErr(err)
 		}
 	}
-	return resourceAppetizeAppRead(d, m)
+
+	return resourceAppetizeAppRead(ctx, d, m)
 }
 
-func resourceAppetizeAppDelete(d *schema.ResourceData, m interface{}) error {
-	appetizer := NewAppetizer(d)
+func resourceAppetizeAppDelete(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	appetizer := m.(*Appetize)
 	err := appetizer.DeleteApp(d.Id())
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
-	return nil
+	return diags
 }
