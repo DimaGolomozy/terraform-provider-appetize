@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -57,7 +58,7 @@ type Appetize struct {
 	apiToken string
 }
 
-func NewAppetize(apiToken string) *Appetize {
+func NewAppetizer(apiToken string) *Appetize {
 	appetize := new(Appetize)
 	appetize.apiToken = apiToken
 	return appetize
@@ -181,4 +182,29 @@ func (appetize *Appetize) read(resp *http.Response) (*App, error) {
 	var app App
 	_ = json.Unmarshal(bodyBytes, &app)
 	return &app, nil
+}
+
+func NewAppOptions(d *schema.ResourceData) *AppOptions {
+	appOptions := &AppOptions{
+		Platform:              d.Get("platform").(string),
+		ButtonText:            d.Get("button_text").(string),
+		PostSessionButtonText: d.Get("post_session_button_text").(string),
+		Note:                  d.Get("note").(string),
+		FileType:              d.Get("file_type").(string),
+		LaunchUrl:             d.Get("launch_url").(string),
+		//Timeout:               d.Get("timeout").(int),
+		Disabled:     d.Get("disabled").(bool),
+		DisabledHome: d.Get("disable_home").(bool),
+		UseLastFrame: d.Get("use_last_frame").(bool),
+	}
+
+	if v, ok := d.GetOk("file_path"); ok {
+		appOptions.FilePath = v.(string)
+	}
+
+	if v, ok := d.GetOk("url"); ok {
+		appOptions.Url = v.(string)
+	}
+
+	return appOptions
 }

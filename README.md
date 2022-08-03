@@ -8,8 +8,6 @@ please see basic usage here [appetize-docs](https://appetize.io/docs)
 
 ### Argument Reference
 ```
-api_token   - (Required) The api token for appetize api
-              or set "APPETIZE_API_TOKEN" as environment variable 
 url         - (Required) A publicly accessible link to your .zip, .tar.gz, or .apk file
               Only for appetize_app resource
 file_path   - (Required) Specify a file location on the local filesystem
@@ -21,10 +19,29 @@ button_text - (Optional) Customize the message prompting the user to start the s
 post_session_button_text - (Optional) Customize the message prompting the user to restart the session
 ```
 
-### Attributes Reference  
+### Attributes Reference
+
 In addition to all arguments above, the following attributes are exported:
+
 ```
 name        - Name of the app
 public_key  - Public key of the app 
 private_key - Private key of the app 
+```
+
+## Example Usage
+
+Do not keep your authentication api token in HCL for production environments, use Terraform environment variables.
+
+```terraform
+provider "appetize" {
+  api_token = "tokentokentoken" 
+}
+
+resource "appetize_app" "app" {
+  url       = "https://ftp.com/my/android/app"
+  platform  = "android"
+  
+  note = "this is a note"
+}
 ```
