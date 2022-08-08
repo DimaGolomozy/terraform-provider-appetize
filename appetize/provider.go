@@ -2,7 +2,6 @@ package appetize
 
 import (
 	"context"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -13,6 +12,7 @@ func Provider() *schema.Provider {
 			"api_token": &schema.Schema{
 				Type:        schema.TypeString,
 				Required:    true,
+				Sensitive:   true,
 				DefaultFunc: schema.EnvDefaultFunc("APPETIZE_API_TOKEN", nil),
 			},
 		},
