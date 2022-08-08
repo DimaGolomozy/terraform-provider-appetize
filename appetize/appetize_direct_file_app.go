@@ -37,10 +37,11 @@ func resourceAppetizeDirectFileAppCreate(ctx context.Context, d *schema.Resource
 	var diags diag.Diagnostics
 
 	appetizer := m.(*Appetize)
-	err := appetizer.DeleteApp(d.Id())
+	app, err := appetizer.CreateApp(NewAppOptions(d))
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
+	d.SetId(app.PublicKey)
 	return diags
 }
