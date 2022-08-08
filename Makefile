@@ -1,10 +1,10 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 GOFMT_FILES?=$$(find . -name '*.go' | grep -v vendor)
 HOSTNAME=local
-NAMESPACE=dima.golomozy
+NAMESPACE=dimagolomozy
 NAME=appetize
 BINARY=terraform-provider-${NAME}
-VERSION=0.2
+VERSION=1.0.0
 OS_ARCH=darwin_amd64
 
 .PHONY: build fmt release install fmt test
@@ -33,7 +33,7 @@ release:
 
 install: build
 	mkdir -p ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
-	mv ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
+	mv -f ${BINARY} ~/.terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS_ARCH}
 
 test:
 	go test -i $(TEST) || exit 1

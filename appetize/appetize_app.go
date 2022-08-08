@@ -103,7 +103,7 @@ func resourceAppetizeAppRead(ctx context.Context, d *schema.ResourceData, m inte
 		return diag.FromErr(err)
 	}
 	if app == nil {
-		return diag.FromErr(fmt.Errorf("failed getting app"))
+		return diag.FromErr(fmt.Errorf("failed getting app with id [%v]", d.Id()))
 	}
 
 	d.Set("public_key", app.PublicKey)
