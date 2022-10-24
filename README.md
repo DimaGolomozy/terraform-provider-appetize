@@ -1,5 +1,5 @@
 # terraform-appetize-provider
-
+test
 please see basic usage here [appetize-docs](https://appetize.io/docs)
 
 ### resources:
