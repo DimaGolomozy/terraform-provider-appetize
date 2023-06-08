@@ -43,5 +43,5 @@ func resourceAppetizeDirectFileAppCreate(ctx context.Context, d *schema.Resource
 	}
 
 	d.SetId(app.PublicKey)
-	return diags
+	return append(diags, resourceAppetizeAppRead(ctx, d, m)...)
 }
