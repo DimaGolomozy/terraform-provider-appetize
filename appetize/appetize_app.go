@@ -90,7 +90,7 @@ func resourceAppetizeAppCreate(ctx context.Context, d *schema.ResourceData, m in
 	}
 
 	d.SetId(app.PublicKey)
-	return diags
+	return append(diags, resourceAppetizeAppRead(ctx, d, m)...)
 }
 
 func resourceAppetizeAppRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
